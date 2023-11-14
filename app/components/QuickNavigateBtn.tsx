@@ -3,9 +3,9 @@ import React from 'react'
 
 const QuickNavigateBtn = ({url, title, img}: {url: string, title: string, img: any}) => {
   return (
-    <Link className='bg-black' href={url}>
+    <Link className="qnbtn" href={url}>
       <div>{img}</div>
-      <div className='text-black'>{title}</div>
+      <div>{title}</div>
     </Link>
   )
 }
