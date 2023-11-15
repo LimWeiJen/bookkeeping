@@ -31,3 +31,10 @@ export interface ChartOfAccounts {
   debtorEquity: number
   debtors: Array<{account: string, total: number}>
 }
+
+export interface User {
+  username: string
+  password: string
+  entries: Array<Entry>
+  accounts: Array<Account>
+}

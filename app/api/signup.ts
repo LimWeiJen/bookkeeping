@@ -4,6 +4,7 @@ import { client } from '../database';
 import bcrypt from 'bcrypt';
 import { generateToken } from '../auth';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { User } from '../interfaces';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
@@ -25,9 +26,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // Create a new user
       // TODO: add a proper user object
-      const newUser = {
+      const newUser: User = {
         username,
         password: hashedPassword,
+        entries: [],
+        accounts: []
       };
 
       await db.collection('users').insertOne(newUser);

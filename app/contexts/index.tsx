@@ -29,8 +29,24 @@ export const ContextProvider = ({children}: any) => {
   })
 
   const _fetchData = async () => {
-    // TODO: call the server API and get all the user data from the database
-    return true;
+    try {
+      const response = await fetch('/api', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${window.localStorage.getItem("token")}`
+        }
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        _modifyData(result.user.entries, result.user.accounts);
+        return true;
+      } else console.error('Failed to fetch data', response.statusText);
+    } catch (error: any) {
+      console.error('Error fetching user data:', error.message)
+    }
+    return false;
   }
 
   const _modifyData = async (entries: Array<Entry>, accounts: Array<Account>) => {
@@ -60,6 +76,10 @@ export const ContextProvider = ({children}: any) => {
     setjournalLedger(jLedger);
     setgeneralLedger(gLedger);
     setchartOfAccounts(cAccounts);
+  }
+
+  const signIn = async (username: string, password: string) => {
+
   }
 
   const addEntry = async (entries: Array<Entry>) => {
