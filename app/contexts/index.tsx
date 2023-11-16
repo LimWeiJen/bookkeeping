@@ -10,6 +10,8 @@ interface ContextInterface {
   journalLedger: JournalLedger | null
   generalLedger: GeneralLedger | null
   chartOfAccounts : ChartOfAccounts | null
+  signIn: (username: string, password: string) => void
+  signUp: (username: string, password: string) => void
 }
 
 export const context = createContext<ContextInterface | null>(null);
@@ -79,15 +81,81 @@ export const ContextProvider = ({children}: any) => {
   }
 
   const signIn = async (username: string, password: string) => {
+    try {
+      const response = await fetch('/api/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({username, password})
+      });
 
+      if (response.ok) {
+        const result = await response.json();
+        window.localStorage.setItem("token", `Bearer ${result.token}`);
+        window.location.href = "/home";
+      } else console.error('Failed to fetch data', response.statusText);
+    } catch (error: any) {
+      console.error('Error fetching user data:', error.message)
+    }
+  }
+
+  const signUp = async (username: string, password: string) => {
+    try {
+      const response = await fetch('/api/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({username, password})
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        window.localStorage.setItem("token", result.token);
+        window.location.href = "/home";
+      } else console.error('Failed to fetch data', response.statusText);
+    } catch (error: any) {
+      console.error('Error fetching user data:', error.message)
+    }
   }
 
   const addEntry = async (entries: Array<Entry>) => {
-    // TODO: call the server API and add the entries
+    try {
+      const response = await fetch('/api/addEntry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${window.localStorage.getItem("token")}`
+        },
+        body: JSON.stringify({ entries })
+      });
+
+      if (response.ok) {
+        window.location.href = "/home";
+      } else console.error('Failed to fetch data', response.statusText);
+    } catch (error: any) {
+      console.error('Error fetching user data:', error.message)
+    }
   }
 
   const addAccount = async (account: Account) => {
-    // TODO: call the server API and add a new account
+     try {
+      const response = await fetch('/api/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${window.localStorage.getItem("token")}`
+        },
+        body: JSON.stringify({ account })
+      });
+
+      if (response.ok) {
+        window.location.href = "/home";
+      } else console.error('Failed to fetch data', response.statusText);
+    } catch (error: any) {
+      console.error('Error fetching user data:', error.message)
+    }
   }
 
   return (
@@ -97,7 +165,9 @@ export const ContextProvider = ({children}: any) => {
       addAccount,
       journalLedger,
       generalLedger,
-      chartOfAccounts
+      chartOfAccounts,
+      signIn,
+      signUp
     }}>
       {children}
     </context.Provider>
